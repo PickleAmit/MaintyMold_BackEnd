@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="439f8d8e521a43009ad063c9b0e43bcc" Name="Diagram1" ZoomLevel="67">
+        <EntityTypeShape EntityType="igroup191_test1Model.Employee" Width="1.5" PointX="0.75" PointY="6.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="igroup191_test1Model.Error" Width="1.5" PointX="7.5" PointY="6.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="igroup191_test1Model.InjectionTechnician" Width="1.5" PointX="5.25" PointY="10" IsExpanded="true" />
+        <EntityTypeShape EntityType="igroup191_test1Model.Location" Width="1.5" PointX="3" PointY="1.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="igroup191_test1Model.Manager" Width="1.5" PointX="3" PointY="4.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="igroup191_test1Model.Mold" Width="1.5" PointX="5.25" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="igroup191_test1Model.MoldRoomTechnician" Width="1.5" PointX="5.25" PointY="12.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="igroup191_test1Model.Priority" Width="1.5" PointX="5.25" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="igroup191_test1Model.SchedulingConstraint" Width="1.5" PointX="3" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="igroup191_test1Model.StatusError" Width="1.5" PointX="9.75" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="igroup191_test1Model.StatusErrorStageEnum" Width="1.5" PointX="7.5" PointY="11.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="igroup191_test1Model.Technician" Width="1.5" PointX="3" PointY="9.875" IsExpanded="true" />
+        <AssociationConnector Association="igroup191_test1Model.FK__Manager__Employe__0B91BA14" ManuallyRouted="false" />
+        <AssociationConnector Association="igroup191_test1Model.FK__Schedulin__Techn__2FCF1A8A" ManuallyRouted="false" />
+        <AssociationConnector Association="igroup191_test1Model.FK__Technicia__Emplo__0E6E26BF" ManuallyRouted="false" />
+        <AssociationConnector Association="igroup191_test1Model.FK__Error__MoldID__1EA48E88" ManuallyRouted="false" />
+        <AssociationConnector Association="igroup191_test1Model.FK__Error__PriorityI__1DB06A4F" ManuallyRouted="false" />
+        <AssociationConnector Association="igroup191_test1Model.FK__Error__Technicia__1CBC4616" ManuallyRouted="false" />
+        <AssociationConnector Association="igroup191_test1Model.FK__StatusErr__Error__245D67DE" ManuallyRouted="false" />
+        <AssociationConnector Association="igroup191_test1Model.FK__Injection__Emplo__2BFE89A6" ManuallyRouted="false" />
+        <AssociationConnector Association="igroup191_test1Model.FK__Injection__Locat__2CF2ADDF" ManuallyRouted="false" />
+        <AssociationConnector Association="igroup191_test1Model.FK__Mold__LocationCo__19DFD96B" ManuallyRouted="false" />
+        <AssociationConnector Association="igroup191_test1Model.FK__Priority__Manage__151B244E" ManuallyRouted="false" />
+        <AssociationConnector Association="igroup191_test1Model.FK__MoldRoomT__Emplo__114A936A" ManuallyRouted="false" />
+        <AssociationConnector Association="igroup191_test1Model.FK__StatusErr__MoldR__236943A5" ManuallyRouted="false" />
+        <AssociationConnector Association="igroup191_test1Model.FK__StatusErr__Statu__25518C17" ManuallyRouted="false" />
+        <AssociationConnector Association="igroup191_test1Model.Updating" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

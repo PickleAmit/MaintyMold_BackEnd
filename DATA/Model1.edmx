@@ -1,0 +1,941 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="igroup191_test1Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Employee">
+          <Key>
+            <PropertyRef Name="EmployeeNumber" />
+          </Key>
+          <Property Name="EmployeeNumber" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="50" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="50" />
+          <Property Name="BirthDate" Type="date" />
+          <Property Name="Gender" Type="char" MaxLength="1" />
+          <Property Name="AreaOfExpertise" Type="nvarchar" MaxLength="50" />
+          <Property Name="Email" Type="nvarchar" MaxLength="50" />
+          <Property Name="Password" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Error">
+          <Key>
+            <PropertyRef Name="ErrorNumber" />
+          </Key>
+          <Property Name="ErrorNumber" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OpeningDate" Type="datetime" />
+          <Property Name="ClosingDate" Type="datetime" />
+          <Property Name="TreatmentHours" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="Description" Type="nvarchar" MaxLength="255" />
+          <Property Name="ErrorType" Type="nvarchar" MaxLength="50" />
+          <Property Name="TechnicianID" Type="int" />
+          <Property Name="PriorityID" Type="int" />
+          <Property Name="MoldID" Type="int" />
+        </EntityType>
+        <EntityType Name="InjectionTechnician">
+          <Key>
+            <PropertyRef Name="EmployeeNumber" />
+          </Key>
+          <Property Name="EmployeeNumber" Type="int" Nullable="false" />
+          <Property Name="LocationCode" Type="int" />
+        </EntityType>
+        <EntityType Name="Location">
+          <Key>
+            <PropertyRef Name="LocationCode" />
+          </Key>
+          <Property Name="LocationCode" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LocationName" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Manager">
+          <Key>
+            <PropertyRef Name="EmployeeNumber" />
+          </Key>
+          <Property Name="Department" Type="nvarchar" MaxLength="50" />
+          <Property Name="EmployeeNumber" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Mold">
+          <Key>
+            <PropertyRef Name="MoldID" />
+          </Key>
+          <Property Name="MoldID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MoldDescription" Type="nvarchar" MaxLength="255" />
+          <Property Name="LastTreatmentDate" Type="datetime" />
+          <Property Name="HourOfLastTreatment" Type="int" />
+          <Property Name="LocationCode" Type="int" />
+        </EntityType>
+        <EntityType Name="MoldRoomTechnician">
+          <Key>
+            <PropertyRef Name="EmployeeNumber" />
+          </Key>
+          <Property Name="EmployeeNumber" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Priority">
+          <Key>
+            <PropertyRef Name="PriorityID" />
+          </Key>
+          <Property Name="PriorityID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="50" />
+          <Property Name="ManagerID" Type="int" />
+        </EntityType>
+        <EntityType Name="SchedulingConstraints">
+          <Key>
+            <PropertyRef Name="ConstraintNumber" />
+          </Key>
+          <Property Name="ConstraintNumber" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ConstraintDate" Type="date" Nullable="false" />
+          <Property Name="ConstraintStartHour" Type="time" Precision="7" Nullable="false" />
+          <Property Name="ConstraintEndHour" Type="time" Precision="7" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="TechnicianID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="StatusError">
+          <Key>
+            <PropertyRef Name="ErrorStatusID" />
+          </Key>
+          <Property Name="ErrorStatusID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" />
+          <Property Name="Time" Type="datetime" />
+          <Property Name="Date" Type="date" />
+          <Property Name="Description" Type="nvarchar" MaxLength="255" />
+          <Property Name="MoldRoomTechnicianNumber" Type="int" />
+          <Property Name="ErrorNumber" Type="int" />
+          <Property Name="StatusType" Type="nvarchar" MaxLength="30" />
+        </EntityType>
+        <EntityType Name="StatusErrorStageEnum">
+          <Key>
+            <PropertyRef Name="StatusType" />
+          </Key>
+          <Property Name="StatusType" Type="nvarchar" MaxLength="30" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Technician">
+          <Key>
+            <PropertyRef Name="EmployeeNumber" />
+          </Key>
+          <Property Name="EmployeeNumber" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Updating">
+          <Key>
+            <PropertyRef Name="ErrorNumber" />
+            <PropertyRef Name="ErrorStatusID" />
+          </Key>
+          <Property Name="ErrorNumber" Type="int" Nullable="false" />
+          <Property Name="ErrorStatusID" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__Error__MoldID__1EA48E88">
+          <End Role="Mold" Type="Self.Mold" Multiplicity="0..1" />
+          <End Role="Error" Type="Self.Error" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Mold">
+              <PropertyRef Name="MoldID" />
+            </Principal>
+            <Dependent Role="Error">
+              <PropertyRef Name="MoldID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Error__PriorityI__1DB06A4F">
+          <End Role="Priority" Type="Self.Priority" Multiplicity="0..1" />
+          <End Role="Error" Type="Self.Error" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Priority">
+              <PropertyRef Name="PriorityID" />
+            </Principal>
+            <Dependent Role="Error">
+              <PropertyRef Name="PriorityID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Error__Technicia__1CBC4616">
+          <End Role="Technician" Type="Self.Technician" Multiplicity="0..1" />
+          <End Role="Error" Type="Self.Error" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Technician">
+              <PropertyRef Name="EmployeeNumber" />
+            </Principal>
+            <Dependent Role="Error">
+              <PropertyRef Name="TechnicianID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Injection__Emplo__2BFE89A6">
+          <End Role="Technician" Type="Self.Technician" Multiplicity="1" />
+          <End Role="InjectionTechnician" Type="Self.InjectionTechnician" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Technician">
+              <PropertyRef Name="EmployeeNumber" />
+            </Principal>
+            <Dependent Role="InjectionTechnician">
+              <PropertyRef Name="EmployeeNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Injection__Locat__2CF2ADDF">
+          <End Role="Location" Type="Self.Location" Multiplicity="0..1" />
+          <End Role="InjectionTechnician" Type="Self.InjectionTechnician" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Location">
+              <PropertyRef Name="LocationCode" />
+            </Principal>
+            <Dependent Role="InjectionTechnician">
+              <PropertyRef Name="LocationCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Manager__Employe__0B91BA14">
+          <End Role="Employee" Type="Self.Employee" Multiplicity="1" />
+          <End Role="Manager" Type="Self.Manager" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="EmployeeNumber" />
+            </Principal>
+            <Dependent Role="Manager">
+              <PropertyRef Name="EmployeeNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Mold__LocationCo__19DFD96B">
+          <End Role="Location" Type="Self.Location" Multiplicity="0..1" />
+          <End Role="Mold" Type="Self.Mold" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Location">
+              <PropertyRef Name="LocationCode" />
+            </Principal>
+            <Dependent Role="Mold">
+              <PropertyRef Name="LocationCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__MoldRoomT__Emplo__114A936A">
+          <End Role="Technician" Type="Self.Technician" Multiplicity="1" />
+          <End Role="MoldRoomTechnician" Type="Self.MoldRoomTechnician" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Technician">
+              <PropertyRef Name="EmployeeNumber" />
+            </Principal>
+            <Dependent Role="MoldRoomTechnician">
+              <PropertyRef Name="EmployeeNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Priority__Manage__151B244E">
+          <End Role="Manager" Type="Self.Manager" Multiplicity="0..1" />
+          <End Role="Priority" Type="Self.Priority" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Manager">
+              <PropertyRef Name="EmployeeNumber" />
+            </Principal>
+            <Dependent Role="Priority">
+              <PropertyRef Name="ManagerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Schedulin__Techn__2FCF1A8A">
+          <End Role="Employee" Type="Self.Employee" Multiplicity="1" />
+          <End Role="SchedulingConstraints" Type="Self.SchedulingConstraints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="EmployeeNumber" />
+            </Principal>
+            <Dependent Role="SchedulingConstraints">
+              <PropertyRef Name="TechnicianID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__StatusErr__Error__245D67DE">
+          <End Role="Error" Type="Self.Error" Multiplicity="0..1" />
+          <End Role="StatusError" Type="Self.StatusError" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Error">
+              <PropertyRef Name="ErrorNumber" />
+            </Principal>
+            <Dependent Role="StatusError">
+              <PropertyRef Name="ErrorNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__StatusErr__MoldR__236943A5">
+          <End Role="MoldRoomTechnician" Type="Self.MoldRoomTechnician" Multiplicity="0..1" />
+          <End Role="StatusError" Type="Self.StatusError" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MoldRoomTechnician">
+              <PropertyRef Name="EmployeeNumber" />
+            </Principal>
+            <Dependent Role="StatusError">
+              <PropertyRef Name="MoldRoomTechnicianNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__StatusErr__Statu__25518C17">
+          <End Role="StatusErrorStageEnum" Type="Self.StatusErrorStageEnum" Multiplicity="0..1" />
+          <End Role="StatusError" Type="Self.StatusError" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StatusErrorStageEnum">
+              <PropertyRef Name="StatusType" />
+            </Principal>
+            <Dependent Role="StatusError">
+              <PropertyRef Name="StatusType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Technicia__Emplo__0E6E26BF">
+          <End Role="Employee" Type="Self.Employee" Multiplicity="1" />
+          <End Role="Technician" Type="Self.Technician" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="EmployeeNumber" />
+            </Principal>
+            <Dependent Role="Technician">
+              <PropertyRef Name="EmployeeNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Updating__ErrorN__282DF8C2">
+          <End Role="Error" Type="Self.Error" Multiplicity="1" />
+          <End Role="Updating" Type="Self.Updating" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Error">
+              <PropertyRef Name="ErrorNumber" />
+            </Principal>
+            <Dependent Role="Updating">
+              <PropertyRef Name="ErrorNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Updating__ErrorS__29221CFB">
+          <End Role="StatusError" Type="Self.StatusError" Multiplicity="1" />
+          <End Role="Updating" Type="Self.Updating" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StatusError">
+              <PropertyRef Name="ErrorStatusID" />
+            </Principal>
+            <Dependent Role="Updating">
+              <PropertyRef Name="ErrorStatusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="igroup191_test1ModelStoreContainer">
+          <EntitySet Name="Employee" EntityType="Self.Employee" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Error" EntityType="Self.Error" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InjectionTechnician" EntityType="Self.InjectionTechnician" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Location" EntityType="Self.Location" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Manager" EntityType="Self.Manager" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Mold" EntityType="Self.Mold" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MoldRoomTechnician" EntityType="Self.MoldRoomTechnician" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Priority" EntityType="Self.Priority" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SchedulingConstraints" EntityType="Self.SchedulingConstraints" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="StatusError" EntityType="Self.StatusError" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="StatusErrorStageEnum" EntityType="Self.StatusErrorStageEnum" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Technician" EntityType="Self.Technician" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Updating" EntityType="Self.Updating" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__Error__MoldID__1EA48E88" Association="Self.FK__Error__MoldID__1EA48E88">
+            <End Role="Mold" EntitySet="Mold" />
+            <End Role="Error" EntitySet="Error" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Error__PriorityI__1DB06A4F" Association="Self.FK__Error__PriorityI__1DB06A4F">
+            <End Role="Priority" EntitySet="Priority" />
+            <End Role="Error" EntitySet="Error" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Error__Technicia__1CBC4616" Association="Self.FK__Error__Technicia__1CBC4616">
+            <End Role="Technician" EntitySet="Technician" />
+            <End Role="Error" EntitySet="Error" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Injection__Emplo__2BFE89A6" Association="Self.FK__Injection__Emplo__2BFE89A6">
+            <End Role="Technician" EntitySet="Technician" />
+            <End Role="InjectionTechnician" EntitySet="InjectionTechnician" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Injection__Locat__2CF2ADDF" Association="Self.FK__Injection__Locat__2CF2ADDF">
+            <End Role="Location" EntitySet="Location" />
+            <End Role="InjectionTechnician" EntitySet="InjectionTechnician" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Manager__Employe__0B91BA14" Association="Self.FK__Manager__Employe__0B91BA14">
+            <End Role="Employee" EntitySet="Employee" />
+            <End Role="Manager" EntitySet="Manager" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Mold__LocationCo__19DFD96B" Association="Self.FK__Mold__LocationCo__19DFD96B">
+            <End Role="Location" EntitySet="Location" />
+            <End Role="Mold" EntitySet="Mold" />
+          </AssociationSet>
+          <AssociationSet Name="FK__MoldRoomT__Emplo__114A936A" Association="Self.FK__MoldRoomT__Emplo__114A936A">
+            <End Role="Technician" EntitySet="Technician" />
+            <End Role="MoldRoomTechnician" EntitySet="MoldRoomTechnician" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Priority__Manage__151B244E" Association="Self.FK__Priority__Manage__151B244E">
+            <End Role="Manager" EntitySet="Manager" />
+            <End Role="Priority" EntitySet="Priority" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Schedulin__Techn__2FCF1A8A" Association="Self.FK__Schedulin__Techn__2FCF1A8A">
+            <End Role="Employee" EntitySet="Employee" />
+            <End Role="SchedulingConstraints" EntitySet="SchedulingConstraints" />
+          </AssociationSet>
+          <AssociationSet Name="FK__StatusErr__Error__245D67DE" Association="Self.FK__StatusErr__Error__245D67DE">
+            <End Role="Error" EntitySet="Error" />
+            <End Role="StatusError" EntitySet="StatusError" />
+          </AssociationSet>
+          <AssociationSet Name="FK__StatusErr__MoldR__236943A5" Association="Self.FK__StatusErr__MoldR__236943A5">
+            <End Role="MoldRoomTechnician" EntitySet="MoldRoomTechnician" />
+            <End Role="StatusError" EntitySet="StatusError" />
+          </AssociationSet>
+          <AssociationSet Name="FK__StatusErr__Statu__25518C17" Association="Self.FK__StatusErr__Statu__25518C17">
+            <End Role="StatusErrorStageEnum" EntitySet="StatusErrorStageEnum" />
+            <End Role="StatusError" EntitySet="StatusError" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Technicia__Emplo__0E6E26BF" Association="Self.FK__Technicia__Emplo__0E6E26BF">
+            <End Role="Employee" EntitySet="Employee" />
+            <End Role="Technician" EntitySet="Technician" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Updating__ErrorN__282DF8C2" Association="Self.FK__Updating__ErrorN__282DF8C2">
+            <End Role="Error" EntitySet="Error" />
+            <End Role="Updating" EntitySet="Updating" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Updating__ErrorS__29221CFB" Association="Self.FK__Updating__ErrorS__29221CFB">
+            <End Role="StatusError" EntitySet="StatusError" />
+            <End Role="Updating" EntitySet="Updating" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="igroup191_test1Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Employee">
+          <Key>
+            <PropertyRef Name="EmployeeNumber" />
+          </Key>
+          <Property Name="EmployeeNumber" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="BirthDate" Type="DateTime" Precision="0" />
+          <Property Name="Gender" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="AreaOfExpertise" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Password" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Manager" Relationship="Self.FK__Manager__Employe__0B91BA14" FromRole="Employee" ToRole="Manager" />
+          <NavigationProperty Name="SchedulingConstraints" Relationship="Self.FK__Schedulin__Techn__2FCF1A8A" FromRole="Employee" ToRole="SchedulingConstraints" />
+          <NavigationProperty Name="Technician" Relationship="Self.FK__Technicia__Emplo__0E6E26BF" FromRole="Employee" ToRole="Technician" />
+        </EntityType>
+        <EntityType Name="Error">
+          <Key>
+            <PropertyRef Name="ErrorNumber" />
+          </Key>
+          <Property Name="ErrorNumber" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OpeningDate" Type="DateTime" Precision="3" />
+          <Property Name="ClosingDate" Type="DateTime" Precision="3" />
+          <Property Name="TreatmentHours" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ErrorType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="TechnicianID" Type="Int32" />
+          <Property Name="PriorityID" Type="Int32" />
+          <Property Name="MoldID" Type="Int32" />
+          <NavigationProperty Name="Mold" Relationship="Self.FK__Error__MoldID__1EA48E88" FromRole="Error" ToRole="Mold" />
+          <NavigationProperty Name="Priority" Relationship="Self.FK__Error__PriorityI__1DB06A4F" FromRole="Error" ToRole="Priority" />
+          <NavigationProperty Name="Technician" Relationship="Self.FK__Error__Technicia__1CBC4616" FromRole="Error" ToRole="Technician" />
+          <NavigationProperty Name="StatusErrors" Relationship="Self.FK__StatusErr__Error__245D67DE" FromRole="Error" ToRole="StatusError" />
+          <NavigationProperty Name="StatusErrors1" Relationship="Self.Updating" FromRole="Error" ToRole="StatusError" />
+        </EntityType>
+        <EntityType Name="InjectionTechnician">
+          <Key>
+            <PropertyRef Name="EmployeeNumber" />
+          </Key>
+          <Property Name="EmployeeNumber" Type="Int32" Nullable="false" />
+          <Property Name="LocationCode" Type="Int32" />
+          <NavigationProperty Name="Technician" Relationship="Self.FK__Injection__Emplo__2BFE89A6" FromRole="InjectionTechnician" ToRole="Technician" />
+          <NavigationProperty Name="Location" Relationship="Self.FK__Injection__Locat__2CF2ADDF" FromRole="InjectionTechnician" ToRole="Location" />
+        </EntityType>
+        <EntityType Name="Location">
+          <Key>
+            <PropertyRef Name="LocationCode" />
+          </Key>
+          <Property Name="LocationCode" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LocationName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="InjectionTechnicians" Relationship="Self.FK__Injection__Locat__2CF2ADDF" FromRole="Location" ToRole="InjectionTechnician" />
+          <NavigationProperty Name="Molds" Relationship="Self.FK__Mold__LocationCo__19DFD96B" FromRole="Location" ToRole="Mold" />
+        </EntityType>
+        <EntityType Name="Manager">
+          <Key>
+            <PropertyRef Name="EmployeeNumber" />
+          </Key>
+          <Property Name="Department" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="EmployeeNumber" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Employee" Relationship="Self.FK__Manager__Employe__0B91BA14" FromRole="Manager" ToRole="Employee" />
+          <NavigationProperty Name="Priorities" Relationship="Self.FK__Priority__Manage__151B244E" FromRole="Manager" ToRole="Priority" />
+        </EntityType>
+        <EntityType Name="Mold">
+          <Key>
+            <PropertyRef Name="MoldID" />
+          </Key>
+          <Property Name="MoldID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MoldDescription" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="LastTreatmentDate" Type="DateTime" Precision="3" />
+          <Property Name="HourOfLastTreatment" Type="Int32" />
+          <Property Name="LocationCode" Type="Int32" />
+          <NavigationProperty Name="Errors" Relationship="Self.FK__Error__MoldID__1EA48E88" FromRole="Mold" ToRole="Error" />
+          <NavigationProperty Name="Location" Relationship="Self.FK__Mold__LocationCo__19DFD96B" FromRole="Mold" ToRole="Location" />
+        </EntityType>
+        <EntityType Name="MoldRoomTechnician">
+          <Key>
+            <PropertyRef Name="EmployeeNumber" />
+          </Key>
+          <Property Name="EmployeeNumber" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Technician" Relationship="Self.FK__MoldRoomT__Emplo__114A936A" FromRole="MoldRoomTechnician" ToRole="Technician" />
+          <NavigationProperty Name="StatusErrors" Relationship="Self.FK__StatusErr__MoldR__236943A5" FromRole="MoldRoomTechnician" ToRole="StatusError" />
+        </EntityType>
+        <EntityType Name="Priority">
+          <Key>
+            <PropertyRef Name="PriorityID" />
+          </Key>
+          <Property Name="PriorityID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ManagerID" Type="Int32" />
+          <NavigationProperty Name="Errors" Relationship="Self.FK__Error__PriorityI__1DB06A4F" FromRole="Priority" ToRole="Error" />
+          <NavigationProperty Name="Manager" Relationship="Self.FK__Priority__Manage__151B244E" FromRole="Priority" ToRole="Manager" />
+        </EntityType>
+        <EntityType Name="SchedulingConstraint">
+          <Key>
+            <PropertyRef Name="ConstraintNumber" />
+          </Key>
+          <Property Name="ConstraintNumber" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ConstraintDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="ConstraintStartHour" Type="Time" Nullable="false" Precision="7" />
+          <Property Name="ConstraintEndHour" Type="Time" Nullable="false" Precision="7" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="TechnicianID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Employee" Relationship="Self.FK__Schedulin__Techn__2FCF1A8A" FromRole="SchedulingConstraints" ToRole="Employee" />
+        </EntityType>
+        <EntityType Name="StatusError">
+          <Key>
+            <PropertyRef Name="ErrorStatusID" />
+          </Key>
+          <Property Name="ErrorStatusID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Time" Type="DateTime" Precision="3" />
+          <Property Name="Date" Type="DateTime" Precision="0" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="MoldRoomTechnicianNumber" Type="Int32" />
+          <Property Name="ErrorNumber" Type="Int32" />
+          <Property Name="StatusType" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Error" Relationship="Self.FK__StatusErr__Error__245D67DE" FromRole="StatusError" ToRole="Error" />
+          <NavigationProperty Name="MoldRoomTechnician" Relationship="Self.FK__StatusErr__MoldR__236943A5" FromRole="StatusError" ToRole="MoldRoomTechnician" />
+          <NavigationProperty Name="StatusErrorStageEnum" Relationship="Self.FK__StatusErr__Statu__25518C17" FromRole="StatusError" ToRole="StatusErrorStageEnum" />
+          <NavigationProperty Name="Errors" Relationship="Self.Updating" FromRole="StatusError" ToRole="Error" />
+        </EntityType>
+        <EntityType Name="StatusErrorStageEnum">
+          <Key>
+            <PropertyRef Name="StatusType" />
+          </Key>
+          <Property Name="StatusType" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="StatusErrors" Relationship="Self.FK__StatusErr__Statu__25518C17" FromRole="StatusErrorStageEnum" ToRole="StatusError" />
+        </EntityType>
+        <EntityType Name="Technician">
+          <Key>
+            <PropertyRef Name="EmployeeNumber" />
+          </Key>
+          <Property Name="EmployeeNumber" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Employee" Relationship="Self.FK__Technicia__Emplo__0E6E26BF" FromRole="Technician" ToRole="Employee" />
+          <NavigationProperty Name="Errors" Relationship="Self.FK__Error__Technicia__1CBC4616" FromRole="Technician" ToRole="Error" />
+          <NavigationProperty Name="InjectionTechnician" Relationship="Self.FK__Injection__Emplo__2BFE89A6" FromRole="Technician" ToRole="InjectionTechnician" />
+          <NavigationProperty Name="MoldRoomTechnician" Relationship="Self.FK__MoldRoomT__Emplo__114A936A" FromRole="Technician" ToRole="MoldRoomTechnician" />
+        </EntityType>
+        <Association Name="FK__Manager__Employe__0B91BA14">
+          <End Role="Employee" Type="Self.Employee" Multiplicity="1" />
+          <End Role="Manager" Type="Self.Manager" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="EmployeeNumber" />
+            </Principal>
+            <Dependent Role="Manager">
+              <PropertyRef Name="EmployeeNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Schedulin__Techn__2FCF1A8A">
+          <End Role="Employee" Type="Self.Employee" Multiplicity="1" />
+          <End Role="SchedulingConstraints" Type="Self.SchedulingConstraint" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="EmployeeNumber" />
+            </Principal>
+            <Dependent Role="SchedulingConstraints">
+              <PropertyRef Name="TechnicianID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Technicia__Emplo__0E6E26BF">
+          <End Role="Employee" Type="Self.Employee" Multiplicity="1" />
+          <End Role="Technician" Type="Self.Technician" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="EmployeeNumber" />
+            </Principal>
+            <Dependent Role="Technician">
+              <PropertyRef Name="EmployeeNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Error__MoldID__1EA48E88">
+          <End Role="Mold" Type="Self.Mold" Multiplicity="0..1" />
+          <End Role="Error" Type="Self.Error" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Mold">
+              <PropertyRef Name="MoldID" />
+            </Principal>
+            <Dependent Role="Error">
+              <PropertyRef Name="MoldID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Error__PriorityI__1DB06A4F">
+          <End Role="Priority" Type="Self.Priority" Multiplicity="0..1" />
+          <End Role="Error" Type="Self.Error" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Priority">
+              <PropertyRef Name="PriorityID" />
+            </Principal>
+            <Dependent Role="Error">
+              <PropertyRef Name="PriorityID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Error__Technicia__1CBC4616">
+          <End Role="Technician" Type="Self.Technician" Multiplicity="0..1" />
+          <End Role="Error" Type="Self.Error" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Technician">
+              <PropertyRef Name="EmployeeNumber" />
+            </Principal>
+            <Dependent Role="Error">
+              <PropertyRef Name="TechnicianID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__StatusErr__Error__245D67DE">
+          <End Role="Error" Type="Self.Error" Multiplicity="0..1" />
+          <End Role="StatusError" Type="Self.StatusError" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Error">
+              <PropertyRef Name="ErrorNumber" />
+            </Principal>
+            <Dependent Role="StatusError">
+              <PropertyRef Name="ErrorNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Injection__Emplo__2BFE89A6">
+          <End Role="Technician" Type="Self.Technician" Multiplicity="1" />
+          <End Role="InjectionTechnician" Type="Self.InjectionTechnician" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Technician">
+              <PropertyRef Name="EmployeeNumber" />
+            </Principal>
+            <Dependent Role="InjectionTechnician">
+              <PropertyRef Name="EmployeeNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Injection__Locat__2CF2ADDF">
+          <End Role="Location" Type="Self.Location" Multiplicity="0..1" />
+          <End Role="InjectionTechnician" Type="Self.InjectionTechnician" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Location">
+              <PropertyRef Name="LocationCode" />
+            </Principal>
+            <Dependent Role="InjectionTechnician">
+              <PropertyRef Name="LocationCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Mold__LocationCo__19DFD96B">
+          <End Role="Location" Type="Self.Location" Multiplicity="0..1" />
+          <End Role="Mold" Type="Self.Mold" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Location">
+              <PropertyRef Name="LocationCode" />
+            </Principal>
+            <Dependent Role="Mold">
+              <PropertyRef Name="LocationCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Priority__Manage__151B244E">
+          <End Role="Manager" Type="Self.Manager" Multiplicity="0..1" />
+          <End Role="Priority" Type="Self.Priority" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Manager">
+              <PropertyRef Name="EmployeeNumber" />
+            </Principal>
+            <Dependent Role="Priority">
+              <PropertyRef Name="ManagerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__MoldRoomT__Emplo__114A936A">
+          <End Role="Technician" Type="Self.Technician" Multiplicity="1" />
+          <End Role="MoldRoomTechnician" Type="Self.MoldRoomTechnician" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Technician">
+              <PropertyRef Name="EmployeeNumber" />
+            </Principal>
+            <Dependent Role="MoldRoomTechnician">
+              <PropertyRef Name="EmployeeNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__StatusErr__MoldR__236943A5">
+          <End Role="MoldRoomTechnician" Type="Self.MoldRoomTechnician" Multiplicity="0..1" />
+          <End Role="StatusError" Type="Self.StatusError" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MoldRoomTechnician">
+              <PropertyRef Name="EmployeeNumber" />
+            </Principal>
+            <Dependent Role="StatusError">
+              <PropertyRef Name="MoldRoomTechnicianNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__StatusErr__Statu__25518C17">
+          <End Role="StatusErrorStageEnum" Type="Self.StatusErrorStageEnum" Multiplicity="0..1" />
+          <End Role="StatusError" Type="Self.StatusError" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StatusErrorStageEnum">
+              <PropertyRef Name="StatusType" />
+            </Principal>
+            <Dependent Role="StatusError">
+              <PropertyRef Name="StatusType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Updating">
+          <End Role="Error" Type="Self.Error" Multiplicity="*" />
+          <End Role="StatusError" Type="Self.StatusError" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="NetafimDbContext" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Employees" EntityType="Self.Employee" />
+          <EntitySet Name="Errors" EntityType="Self.Error" />
+          <EntitySet Name="InjectionTechnicians" EntityType="Self.InjectionTechnician" />
+          <EntitySet Name="Locations" EntityType="Self.Location" />
+          <EntitySet Name="Managers" EntityType="Self.Manager" />
+          <EntitySet Name="Molds" EntityType="Self.Mold" />
+          <EntitySet Name="MoldRoomTechnicians" EntityType="Self.MoldRoomTechnician" />
+          <EntitySet Name="Priorities" EntityType="Self.Priority" />
+          <EntitySet Name="SchedulingConstraints" EntityType="Self.SchedulingConstraint" />
+          <EntitySet Name="StatusErrors" EntityType="Self.StatusError" />
+          <EntitySet Name="StatusErrorStageEnums" EntityType="Self.StatusErrorStageEnum" />
+          <EntitySet Name="Technicians" EntityType="Self.Technician" />
+          <AssociationSet Name="FK__Manager__Employe__0B91BA14" Association="Self.FK__Manager__Employe__0B91BA14">
+            <End Role="Employee" EntitySet="Employees" />
+            <End Role="Manager" EntitySet="Managers" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Schedulin__Techn__2FCF1A8A" Association="Self.FK__Schedulin__Techn__2FCF1A8A">
+            <End Role="Employee" EntitySet="Employees" />
+            <End Role="SchedulingConstraints" EntitySet="SchedulingConstraints" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Technicia__Emplo__0E6E26BF" Association="Self.FK__Technicia__Emplo__0E6E26BF">
+            <End Role="Employee" EntitySet="Employees" />
+            <End Role="Technician" EntitySet="Technicians" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Error__MoldID__1EA48E88" Association="Self.FK__Error__MoldID__1EA48E88">
+            <End Role="Mold" EntitySet="Molds" />
+            <End Role="Error" EntitySet="Errors" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Error__PriorityI__1DB06A4F" Association="Self.FK__Error__PriorityI__1DB06A4F">
+            <End Role="Priority" EntitySet="Priorities" />
+            <End Role="Error" EntitySet="Errors" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Error__Technicia__1CBC4616" Association="Self.FK__Error__Technicia__1CBC4616">
+            <End Role="Technician" EntitySet="Technicians" />
+            <End Role="Error" EntitySet="Errors" />
+          </AssociationSet>
+          <AssociationSet Name="FK__StatusErr__Error__245D67DE" Association="Self.FK__StatusErr__Error__245D67DE">
+            <End Role="Error" EntitySet="Errors" />
+            <End Role="StatusError" EntitySet="StatusErrors" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Injection__Emplo__2BFE89A6" Association="Self.FK__Injection__Emplo__2BFE89A6">
+            <End Role="Technician" EntitySet="Technicians" />
+            <End Role="InjectionTechnician" EntitySet="InjectionTechnicians" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Injection__Locat__2CF2ADDF" Association="Self.FK__Injection__Locat__2CF2ADDF">
+            <End Role="Location" EntitySet="Locations" />
+            <End Role="InjectionTechnician" EntitySet="InjectionTechnicians" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Mold__LocationCo__19DFD96B" Association="Self.FK__Mold__LocationCo__19DFD96B">
+            <End Role="Location" EntitySet="Locations" />
+            <End Role="Mold" EntitySet="Molds" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Priority__Manage__151B244E" Association="Self.FK__Priority__Manage__151B244E">
+            <End Role="Manager" EntitySet="Managers" />
+            <End Role="Priority" EntitySet="Priorities" />
+          </AssociationSet>
+          <AssociationSet Name="FK__MoldRoomT__Emplo__114A936A" Association="Self.FK__MoldRoomT__Emplo__114A936A">
+            <End Role="Technician" EntitySet="Technicians" />
+            <End Role="MoldRoomTechnician" EntitySet="MoldRoomTechnicians" />
+          </AssociationSet>
+          <AssociationSet Name="FK__StatusErr__MoldR__236943A5" Association="Self.FK__StatusErr__MoldR__236943A5">
+            <End Role="MoldRoomTechnician" EntitySet="MoldRoomTechnicians" />
+            <End Role="StatusError" EntitySet="StatusErrors" />
+          </AssociationSet>
+          <AssociationSet Name="FK__StatusErr__Statu__25518C17" Association="Self.FK__StatusErr__Statu__25518C17">
+            <End Role="StatusErrorStageEnum" EntitySet="StatusErrorStageEnums" />
+            <End Role="StatusError" EntitySet="StatusErrors" />
+          </AssociationSet>
+          <AssociationSet Name="Updating" Association="Self.Updating">
+            <End Role="Error" EntitySet="Errors" />
+            <End Role="StatusError" EntitySet="StatusErrors" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="igroup191_test1ModelStoreContainer" CdmEntityContainer="NetafimDbContext">
+          <EntitySetMapping Name="Employees">
+            <EntityTypeMapping TypeName="igroup191_test1Model.Employee">
+              <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="EmployeeNumber" ColumnName="EmployeeNumber" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="BirthDate" ColumnName="BirthDate" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="AreaOfExpertise" ColumnName="AreaOfExpertise" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Errors">
+            <EntityTypeMapping TypeName="igroup191_test1Model.Error">
+              <MappingFragment StoreEntitySet="Error">
+                <ScalarProperty Name="ErrorNumber" ColumnName="ErrorNumber" />
+                <ScalarProperty Name="OpeningDate" ColumnName="OpeningDate" />
+                <ScalarProperty Name="ClosingDate" ColumnName="ClosingDate" />
+                <ScalarProperty Name="TreatmentHours" ColumnName="TreatmentHours" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ErrorType" ColumnName="ErrorType" />
+                <ScalarProperty Name="TechnicianID" ColumnName="TechnicianID" />
+                <ScalarProperty Name="PriorityID" ColumnName="PriorityID" />
+                <ScalarProperty Name="MoldID" ColumnName="MoldID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InjectionTechnicians">
+            <EntityTypeMapping TypeName="igroup191_test1Model.InjectionTechnician">
+              <MappingFragment StoreEntitySet="InjectionTechnician">
+                <ScalarProperty Name="EmployeeNumber" ColumnName="EmployeeNumber" />
+                <ScalarProperty Name="LocationCode" ColumnName="LocationCode" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Locations">
+            <EntityTypeMapping TypeName="igroup191_test1Model.Location">
+              <MappingFragment StoreEntitySet="Location">
+                <ScalarProperty Name="LocationCode" ColumnName="LocationCode" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Managers">
+            <EntityTypeMapping TypeName="igroup191_test1Model.Manager">
+              <MappingFragment StoreEntitySet="Manager">
+                <ScalarProperty Name="Department" ColumnName="Department" />
+                <ScalarProperty Name="EmployeeNumber" ColumnName="EmployeeNumber" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Molds">
+            <EntityTypeMapping TypeName="igroup191_test1Model.Mold">
+              <MappingFragment StoreEntitySet="Mold">
+                <ScalarProperty Name="MoldID" ColumnName="MoldID" />
+                <ScalarProperty Name="MoldDescription" ColumnName="MoldDescription" />
+                <ScalarProperty Name="LastTreatmentDate" ColumnName="LastTreatmentDate" />
+                <ScalarProperty Name="HourOfLastTreatment" ColumnName="HourOfLastTreatment" />
+                <ScalarProperty Name="LocationCode" ColumnName="LocationCode" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MoldRoomTechnicians">
+            <EntityTypeMapping TypeName="igroup191_test1Model.MoldRoomTechnician">
+              <MappingFragment StoreEntitySet="MoldRoomTechnician">
+                <ScalarProperty Name="EmployeeNumber" ColumnName="EmployeeNumber" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Priorities">
+            <EntityTypeMapping TypeName="igroup191_test1Model.Priority">
+              <MappingFragment StoreEntitySet="Priority">
+                <ScalarProperty Name="PriorityID" ColumnName="PriorityID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ManagerID" ColumnName="ManagerID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SchedulingConstraints">
+            <EntityTypeMapping TypeName="igroup191_test1Model.SchedulingConstraint">
+              <MappingFragment StoreEntitySet="SchedulingConstraints">
+                <ScalarProperty Name="ConstraintNumber" ColumnName="ConstraintNumber" />
+                <ScalarProperty Name="ConstraintDate" ColumnName="ConstraintDate" />
+                <ScalarProperty Name="ConstraintStartHour" ColumnName="ConstraintStartHour" />
+                <ScalarProperty Name="ConstraintEndHour" ColumnName="ConstraintEndHour" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="TechnicianID" ColumnName="TechnicianID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StatusErrors">
+            <EntityTypeMapping TypeName="igroup191_test1Model.StatusError">
+              <MappingFragment StoreEntitySet="StatusError">
+                <ScalarProperty Name="ErrorStatusID" ColumnName="ErrorStatusID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Time" ColumnName="Time" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="MoldRoomTechnicianNumber" ColumnName="MoldRoomTechnicianNumber" />
+                <ScalarProperty Name="ErrorNumber" ColumnName="ErrorNumber" />
+                <ScalarProperty Name="StatusType" ColumnName="StatusType" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StatusErrorStageEnums">
+            <EntityTypeMapping TypeName="igroup191_test1Model.StatusErrorStageEnum">
+              <MappingFragment StoreEntitySet="StatusErrorStageEnum">
+                <ScalarProperty Name="StatusType" ColumnName="StatusType" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Technicians">
+            <EntityTypeMapping TypeName="igroup191_test1Model.Technician">
+              <MappingFragment StoreEntitySet="Technician">
+                <ScalarProperty Name="EmployeeNumber" ColumnName="EmployeeNumber" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="Updating" TypeName="igroup191_test1Model.Updating" StoreEntitySet="Updating">
+            <EndProperty Name="Error">
+              <ScalarProperty Name="ErrorNumber" ColumnName="ErrorNumber" />
+            </EndProperty>
+            <EndProperty Name="StatusError">
+              <ScalarProperty Name="ErrorStatusID" ColumnName="ErrorStatusID" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
