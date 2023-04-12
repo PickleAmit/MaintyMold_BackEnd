@@ -40,25 +40,35 @@ namespace WebApplication1.Controllers
 
         [HttpGet]
         [Route("api/locations")]
-        public IEnumerable<Location> GetLocations()
+        public IHttpActionResult GetLocations()
         {
-            return db.Locations.ToList();
+            var locations = db.Locations
+                .Join(
+                    db.Molds,
+                    location => location.LocationCode,
+                    mold => mold.LocationCode,
+                    (location, mold) => new { Location = location, Mold = mold }
+                )
+                .Join(
+                    db.Errors,
+                    locMold => locMold.Mold.MoldID,
+                    error => error.MoldID,
+                    (locMold, error) => new { Location = locMold.Location, Mold = locMold.Mold, Error = error }
+                )
+                .GroupBy(lme => lme.Mold.MoldID)
+                .Select(g => g.OrderByDescending(lme => lme.Error.StatusErrors.OrderByDescending(s => s.Date).FirstOrDefault().Date).FirstOrDefault())
+                .Select(lme => new
+                {
+                    LocationCode = lme.Location.LocationCode,
+                    LocationName = lme.Location.LocationName,
+                    MoldID = lme.Mold.MoldID,
+                    StatusType = lme.Error.StatusErrors.OrderByDescending(s => s.Date).FirstOrDefault().StatusType
+                })
+                .ToList();
+
+            return Ok(locations);
         }
 
-        // POST: api/Employee
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT: api/Employee/5
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE: api/Employee/5
-        public void Delete(int id)
-        {
-        }
 
         private EmployeeDto MapToDto(DATA.Employee employee)
         {

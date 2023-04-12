@@ -40,6 +40,95 @@ namespace WebApplication1.Controllers
             return Ok(errorsWithDetails);
         }
 
+        // Gets all the errors with StatusType 'Waiting for treatment'
+        [HttpGet]
+        [Route("api/error/waitingfortreatment")]
+        public IHttpActionResult GetErrorsWaitingForTreatment()
+        {
+            var errors = db.Errors
+                .Where(e => e.StatusErrors.OrderByDescending(s => s.Date).FirstOrDefault().StatusType == "Waiting for treatment")
+                .ToList();
+
+                var errorsWithDetails = errors
+                .Select((error, index) => new
+                {
+                    RowNumber = index + 1,
+                    ErrorNumber = error.ErrorNumber,
+                    Description = error.Description,
+                    ErrorType = error.ErrorType,
+                    TreatmentHours = error.TreatmentHours,
+                    TechnicianID = error.TechnicianID,
+                    TechnicianName = error.Technician.Employee.FirstName + " " + error.Technician.Employee.LastName,
+                    MoldID = error.MoldID,
+                    LocationName = error.Mold?.Location?.LocationName,
+                    PriorityDescription = error.Priority?.Description,
+                    StatusType = error.StatusErrors.OrderByDescending(s => s.Date).FirstOrDefault().StatusType
+                    // ... other fields you want to return
+                })
+                .ToList();
+            return Ok(errorsWithDetails);
+        }
+
+        // Gets all the errors with StatusType 'In Treatment'
+        [HttpGet]
+        [Route("api/error/intreatment")]
+        public IHttpActionResult GetErrorsInTreatment()
+        {
+            var errors = db.Errors
+                .Where(e => e.StatusErrors.OrderByDescending(s => s.Date).FirstOrDefault().StatusType == "In treatment")
+                .ToList();
+
+            var errorsWithDetails = errors
+                .Select((error, index) => new
+                {
+                    RowNumber = index + 1,
+                    ErrorNumber = error.ErrorNumber,
+                    Description = error.Description,
+                    ErrorType = error.ErrorType,
+                    TreatmentHours = error.TreatmentHours,
+                    TechnicianID = error.TechnicianID,
+                    TechnicianName = error.Technician.Employee.FirstName + " " + error.Technician.Employee.LastName,
+                    MoldID = error.MoldID,
+                    LocationName = error.Mold?.Location?.LocationName,
+                    PriorityDescription = error.Priority?.Description,
+                    StatusType = error.StatusErrors.OrderByDescending(s => s.Date).FirstOrDefault().StatusType,
+                })
+                .ToList();
+
+            return Ok(errorsWithDetails);
+        }
+
+        // Gets all the errors with StatusType 'Finished'
+        [HttpGet]
+        [Route("api/error/finished")]
+        public IHttpActionResult GetErrorsFinished()
+        {
+            var errors = db.Errors
+                .Where(e => e.StatusErrors.OrderByDescending(s => s.Date).FirstOrDefault().StatusType == "finished")
+                .ToList();
+
+            var errorsWithDetails = errors
+                .Select((error, index) => new
+                {
+                    RowNumber = index + 1,
+                    ErrorNumber = error.ErrorNumber,
+                    Description = error.Description,
+                    ErrorType = error.ErrorType,
+                    OpeningDate = error.OpeningDate,
+                    ClosingDate = error.ClosingDate,
+                    TreatmentHours = error.TreatmentHours,
+                    TechnicianID = error.TechnicianID,
+                    TechnicianName = error.Technician.Employee.FirstName + " " + error.Technician.Employee.LastName,
+                    MoldID = error.MoldID,
+                    LocationName = error.Mold?.Location?.LocationName,
+                    PriorityDescription = error.Priority?.Description,
+                    StatusType = error.StatusErrors.OrderByDescending(s => s.Date).LastOrDefault().StatusType,
+                })
+                .ToList();
+
+            return Ok(errorsWithDetails);
+        }
+
         //Gets specific error
         [HttpGet]
         [Route("api/error/{id}")]

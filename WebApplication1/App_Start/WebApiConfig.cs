@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace WebApplication1
 {
@@ -14,6 +15,10 @@ namespace WebApplication1
 
             //ReferenceLoopHandeling to ignore circular references while serializing obj
             config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+
+            // Enable Cors
+            var cors = new EnableCorsAttribute("*", "*", "*"); // This will allow all origins, headers and methods
+            config.EnableCors(cors);
 
             // Web API routes
             config.MapHttpAttributeRoutes();
