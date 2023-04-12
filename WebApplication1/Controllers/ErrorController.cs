@@ -19,26 +19,42 @@ namespace WebApplication1.Controllers
         [Route("api/error")]
         public IHttpActionResult Get()
         {
-            var errors = db.Errors.Include(e => e.Mold.Location).Include(e => e.Priority).ToList(); // Retrieve errors from the database first with necessary includes
+            var errorsWithLatestStatus = db.Errors.Include(e => e.Mold.Location)
+                                                  .Include(e => e.Priority)
+                                                  .Join(db.StatusErrors,
+                                                        error => error.ErrorNumber,
+                                                        status => status.ErrorNumber,
+                                                        (error, status) => new { Error = error, Status = status })
+                                                  .GroupBy(x => x.Error.ErrorNumber)
+                                                  .Select(group => new
+                                                  {
+                                                      Error = group.FirstOrDefault().Error,
+                                                      LatestStatus = group.OrderByDescending(x => x.Status.Date).FirstOrDefault().Status.StatusType
+                                                  })
+                                                  .ToList();
 
-            var errorsWithDetails = errors
-                .Select((error, index) => new
+            var errorsWithDetails = errorsWithLatestStatus
+                .Select((x, index) => new
                 {
                     RowNumber = index + 1,
-                    ErrorNumber = error.ErrorNumber,
-                    Description = error.Description,
-                    ErrorType = error.ErrorType,
-                    TreatmentHours = error.TreatmentHours,
-                    TechnicianID = error.TechnicianID,
-                    MoldID = error.MoldID,
-                    LocationName = error.Mold?.Location?.LocationName,
-                    PriorityDescription = error.Priority?.Description,
+                    ErrorNumber = x.Error.ErrorNumber,
+                    Description = x.Error.Description,
+                    ErrorType = x.Error.ErrorType,
+                    OpeningDate = x.Error.OpeningDate,
+                    ClosingDate = x.Error?.ClosingDate,
+                    TreatmentHours = x.Error.TreatmentHours,
+                    TechnicianID = x.Error.TechnicianID,
+                    MoldID = x.Error.MoldID,
+                    LocationName = x.Error.Mold?.Location?.LocationName,
+                    PriorityDescription = x.Error.Priority?.Description,
+                    ErrorStatus = x.LatestStatus,
                     // ... other fields you want to return
                 })
                 .ToList();
 
             return Ok(errorsWithDetails);
         }
+
 
         // Gets all the errors with StatusType 'Waiting for treatment'
         [HttpGet]
