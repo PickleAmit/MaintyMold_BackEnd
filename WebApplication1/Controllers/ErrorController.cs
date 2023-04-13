@@ -252,14 +252,15 @@ namespace WebApplication1.Controllers
                 return NotFound();
             }
 
-            var priority = new Priority
+            // Find the priority based on the description
+            var priority = db.Priorities.FirstOrDefault(p => p.Description == model.Description);
+            
+            if (priority == null)
             {
-                Description = model.Description,
-                ManagerID = model.ManagerID
-            };
+                return BadRequest("Invalid priority description");
+            }
 
-            db.Priorities.Add(priority);
-            db.SaveChanges();
+            // Update the error with the found priorityID
 
             error.PriorityID = priority.PriorityID;
             db.Entry(error).State = EntityState.Modified;
@@ -271,7 +272,6 @@ namespace WebApplication1.Controllers
         public class UpdatePriorityModel
         {
             public string Description { get; set; }
-            public int ManagerID { get; set; }
         }
 
 
@@ -285,6 +285,13 @@ namespace WebApplication1.Controllers
             if (error == null)
             {
                 return NotFound();
+            }
+
+            // Update the Mold table based on the MoldDescription
+            var mold = db.Molds.FirstOrDefault(m => m.MoldID == error.MoldID);
+            if (mold != null)
+            {
+                mold.LastTreatmentDate = DateTime.Now;
             }
 
             //Create a new StatusError obj and set the properties
@@ -323,6 +330,16 @@ namespace WebApplication1.Controllers
             // Set the ClosingDate and calculate the TreatmentHours
             error.ClosingDate = DateTime.Now;
             error.TreatmentHours = (decimal)(error.ClosingDate - error.OpeningDate).GetValueOrDefault().TotalHours;
+
+
+            // Update the Mold table based on the MoldDescription
+            var mold = db.Molds.FirstOrDefault(m => m.MoldID == error.MoldID);
+            if (mold != null)
+            {
+                mold.LastTreatmentDate = error.ClosingDate;
+                mold.HourOfLastTreatment = (int)error.TreatmentHours;
+            }
+
 
             // Create a new StatusError object and set the properties
             StatusError statusError = new StatusError
