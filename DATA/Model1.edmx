@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="igroup191_test1Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="igroup191_test1Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Employee">
           <Key>
             <PropertyRef Name="EmployeeNumber" />
@@ -31,6 +31,8 @@
           <Property Name="TechnicianID" Type="int" />
           <Property Name="PriorityID" Type="int" />
           <Property Name="MoldID" Type="int" />
+          <Property Name="ErrorPicture" Type="varbinary(max)" />
+          <Property Name="LeadingTechnicianID" Type="int" />
         </EntityType>
         <EntityType Name="InjectionTechnician">
           <Key>
@@ -313,6 +315,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Error_MoldRoomTechnician">
+          <End Role="MoldRoomTechnician" Type="Self.MoldRoomTechnician" Multiplicity="0..1" />
+          <End Role="Error" Type="Self.Error" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MoldRoomTechnician">
+              <PropertyRef Name="EmployeeNumber" />
+            </Principal>
+            <Dependent Role="Error">
+              <PropertyRef Name="LeadingTechnicianID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="igroup191_test1ModelStoreContainer">
           <EntitySet Name="Employee" EntityType="Self.Employee" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Error" EntityType="Self.Error" Schema="dbo" store:Type="Tables" />
@@ -391,9 +405,12 @@
             <End Role="StatusError" EntitySet="StatusError" />
             <End Role="Updating" EntitySet="Updating" />
           </AssociationSet>
+          <AssociationSet Name="FK_Error_MoldRoomTechnician" Association="Self.FK_Error_MoldRoomTechnician">
+            <End Role="MoldRoomTechnician" EntitySet="MoldRoomTechnician" />
+            <End Role="Error" EntitySet="Error" />
+          </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="igroup191_test1Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -431,6 +448,9 @@
           <NavigationProperty Name="Technician" Relationship="Self.FK__Error__Technicia__1CBC4616" FromRole="Error" ToRole="Technician" />
           <NavigationProperty Name="StatusErrors" Relationship="Self.FK__StatusErr__Error__245D67DE" FromRole="Error" ToRole="StatusError" />
           <NavigationProperty Name="StatusErrors1" Relationship="Self.Updating" FromRole="Error" ToRole="StatusError" />
+          <Property Name="ErrorPicture" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="LeadingTechnicianID" Type="Int32" />
+          <NavigationProperty Name="MoldRoomTechnician" Relationship="igroup191_test1Model.FK_Error_MoldRoomTechnician" FromRole="Error" ToRole="MoldRoomTechnician" />
         </EntityType>
         <EntityType Name="InjectionTechnician">
           <Key>
@@ -478,6 +498,7 @@
           <Property Name="EmployeeNumber" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Technician" Relationship="Self.FK__MoldRoomT__Emplo__114A936A" FromRole="MoldRoomTechnician" ToRole="Technician" />
           <NavigationProperty Name="StatusErrors" Relationship="Self.FK__StatusErr__MoldR__236943A5" FromRole="MoldRoomTechnician" ToRole="StatusError" />
+          <NavigationProperty Name="Errors" Relationship="igroup191_test1Model.FK_Error_MoldRoomTechnician" FromRole="MoldRoomTechnician" ToRole="Error" />
         </EntityType>
         <EntityType Name="Priority">
           <Key>
@@ -780,7 +801,23 @@
             <End Role="Error" EntitySet="Errors" />
             <End Role="StatusError" EntitySet="StatusErrors" />
           </AssociationSet>
+          <AssociationSet Name="FK_Error_MoldRoomTechnician" Association="igroup191_test1Model.FK_Error_MoldRoomTechnician">
+            <End Role="MoldRoomTechnician" EntitySet="MoldRoomTechnicians" />
+            <End Role="Error" EntitySet="Errors" />
+          </AssociationSet>
         </EntityContainer>
+        <Association Name="FK_Error_MoldRoomTechnician">
+          <End Type="igroup191_test1Model.MoldRoomTechnician" Role="MoldRoomTechnician" Multiplicity="0..1" />
+          <End Type="igroup191_test1Model.Error" Role="Error" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MoldRoomTechnician">
+              <PropertyRef Name="EmployeeNumber" />
+            </Principal>
+            <Dependent Role="Error">
+              <PropertyRef Name="LeadingTechnicianID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -804,6 +841,8 @@
           <EntitySetMapping Name="Errors">
             <EntityTypeMapping TypeName="igroup191_test1Model.Error">
               <MappingFragment StoreEntitySet="Error">
+                <ScalarProperty Name="LeadingTechnicianID" ColumnName="LeadingTechnicianID" />
+                <ScalarProperty Name="ErrorPicture" ColumnName="ErrorPicture" />
                 <ScalarProperty Name="ErrorNumber" ColumnName="ErrorNumber" />
                 <ScalarProperty Name="OpeningDate" ColumnName="OpeningDate" />
                 <ScalarProperty Name="ClosingDate" ColumnName="ClosingDate" />

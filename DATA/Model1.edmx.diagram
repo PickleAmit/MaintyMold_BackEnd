@@ -32,6 +32,7 @@
         <AssociationConnector Association="igroup191_test1Model.FK__StatusErr__MoldR__236943A5" ManuallyRouted="false" />
         <AssociationConnector Association="igroup191_test1Model.FK__StatusErr__Statu__25518C17" ManuallyRouted="false" />
         <AssociationConnector Association="igroup191_test1Model.Updating" ManuallyRouted="false" />
+        <AssociationConnector Association="igroup191_test1Model.FK_Error_MoldRoomTechnician" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

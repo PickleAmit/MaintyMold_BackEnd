@@ -30,6 +30,8 @@ namespace DATA
         public Nullable<int> TechnicianID { get; set; }
         public Nullable<int> PriorityID { get; set; }
         public Nullable<int> MoldID { get; set; }
+        public byte[] ErrorPicture { get; set; }
+        public Nullable<int> LeadingTechnicianID { get; set; }
     
         public virtual Mold Mold { get; set; }
         public virtual Priority Priority { get; set; }
@@ -38,5 +40,6 @@ namespace DATA
         public virtual ICollection<StatusError> StatusErrors { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StatusError> StatusErrors1 { get; set; }
+        public virtual MoldRoomTechnician MoldRoomTechnician { get; set; }
     }
 }

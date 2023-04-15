@@ -18,6 +18,7 @@ namespace DATA
         public MoldRoomTechnician()
         {
             this.StatusErrors = new HashSet<StatusError>();
+            this.Errors = new HashSet<Error>();
         }
     
         public int EmployeeNumber { get; set; }
@@ -25,5 +26,7 @@ namespace DATA
         public virtual Technician Technician { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StatusError> StatusErrors { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Error> Errors { get; set; }
     }
 }

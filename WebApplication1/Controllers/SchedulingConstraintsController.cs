@@ -17,45 +17,55 @@ namespace WebApplication1.Controllers
         [Route("api/schedulingconstraints/new")]
         public IHttpActionResult AddSchedulingConstraint(AddSchedulingConstraintModel model)
         {
-            int technicianId = model.TechnicianID;
-            string description = model.Description;
-            TimeSpan constraintStartHour = model.ConstraintStartHour;
-            TimeSpan constraintEndHour = model.ConstraintEndHour;
-            DateTime constraintDate = model.ConstraintDate;
-
-            if (string.IsNullOrEmpty(description))
+            try
             {
-                return BadRequest("Description cannot be empty.");
+                int technicianId = model.TechnicianID;
+                string description = model.Description;
+                TimeSpan constraintStartHour = model.ConstraintStartHour;
+                TimeSpan constraintEndHour = model.ConstraintEndHour;
+                DateTime constraintDate = model.ConstraintDate;
+
+                if (string.IsNullOrEmpty(description))
+                {
+                    return BadRequest("Description cannot be empty.");
+                }
+
+                SchedulingConstraint constraint = new SchedulingConstraint
+                {
+                    TechnicianID = technicianId,
+                    ConstraintStartHour = constraintStartHour,
+                    ConstraintEndHour = constraintEndHour,
+                    ConstraintDate = constraintDate,
+                    Description = description,
+                };
+
+                db.SchedulingConstraints.Add(constraint);
+                db.SaveChanges();
+
+                return Ok(constraint);
             }
+            catch (Exception ex) { return InternalServerError(ex); }
 
-            SchedulingConstraint constraint = new SchedulingConstraint
-            {
-                TechnicianID = technicianId,
-                ConstraintStartHour = constraintStartHour,
-                ConstraintEndHour = constraintEndHour,
-                ConstraintDate = constraintDate,
-                Description = description,
-            };
-
-            db.SchedulingConstraints.Add(constraint);
-            db.SaveChanges();
-
-            return Ok(constraint);
         }
 
         [HttpGet]
         [Route("api/schedulingconstraints")]
         public IHttpActionResult GetAllSchedulingConstraints()
         {
-            var constraints = db.SchedulingConstraints.Select(c => new
+            try
             {
-                c.TechnicianID,
-                c.ConstraintDate,
-                c.Description,
-                c.ConstraintStartHour,
-                c.ConstraintEndHour
-            }).ToList();
-            return Ok(constraints);
+                var constraints = db.SchedulingConstraints.Select(c => new
+                {
+                    c.TechnicianID,
+                    c.ConstraintDate,
+                    c.Description,
+                    c.ConstraintStartHour,
+                    c.ConstraintEndHour
+                }).ToList();
+                return Ok(constraints);
+            }
+            catch (Exception ex) { return InternalServerError(ex); }
+
         }
 
         // Gets all the constraints of a specific technician
@@ -63,15 +73,20 @@ namespace WebApplication1.Controllers
         [Route("api/schedulingconstraints/technician/{technicianId}")]
         public IHttpActionResult GetSchedulingConstraintsByTechnicianId(int technicianId)
         {
-            var constraints = db.SchedulingConstraints.Where(c => c.TechnicianID == technicianId).Select(c => new
+            try
             {
-                c.TechnicianID,
-                c.ConstraintDate,
-                c.Description,
-                c.ConstraintStartHour,
-                c.ConstraintEndHour
-            }).ToList();
-            return Ok(constraints);
+                var constraints = db.SchedulingConstraints.Where(c => c.TechnicianID == technicianId).Select(c => new
+                {
+                    c.TechnicianID,
+                    c.ConstraintDate,
+                    c.Description,
+                    c.ConstraintStartHour,
+                    c.ConstraintEndHour
+                }).ToList();
+                return Ok(constraints);
+            }
+            catch (Exception ex) { return InternalServerError(ex); }
+
         }
 
 
