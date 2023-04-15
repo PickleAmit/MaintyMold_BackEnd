@@ -313,7 +313,7 @@ namespace WebApplication1.Controllers
                 db.Entry(error).State = EntityState.Modified;
                 db.SaveChanges();
 
-                return Ok(error.Technician.Employee.FirstName + " " + error.Technician.Employee.LastName);
+                return Ok(leadingTechnician.Technician.Employee.FirstName + " " + leadingTechnician.Technician.Employee.LastName);
             }
             catch (Exception ex) { return InternalServerError(ex); }
 
