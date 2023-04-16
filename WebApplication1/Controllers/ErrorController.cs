@@ -24,6 +24,7 @@ namespace WebApplication1.Controllers
             {
                 var errorsWithLatestStatus = db.Errors.Include(e => e.Mold.Location)
                                                       .Include(e => e.Priority)
+                                                      .Include(e => e.Technician.Employee)
                                                       .Join(db.StatusErrors,
                                                             error => error.ErrorNumber,
                                                             status => status.ErrorNumber,
@@ -34,26 +35,32 @@ namespace WebApplication1.Controllers
                                                           Error = group.FirstOrDefault().Error,
                                                           LatestStatus = group.OrderByDescending(x => x.Status.Date).FirstOrDefault().Status.StatusType
                                                       })
+
                                                       .ToList();
 
                 var errorsWithDetails = errorsWithLatestStatus
-                    .Select((x, index) => new
-                    {
-                        RowNumber = index + 1,
-                        ErrorNumber = x.Error.ErrorNumber,
-                        Description = x.Error.Description,
-                        ErrorType = x.Error.ErrorType,
-                        OpeningDate = x.Error.OpeningDate,
-                        ClosingDate = x.Error?.ClosingDate,
-                        TreatmentHours = x.Error.TreatmentHours,
-                        TechnicianID = x.Error.TechnicianID,
-                        TechnicianName = x.Error.Technician.Employee.FirstName + " " + x.Error.Technician.Employee.LastName,
-                        MoldID = x.Error.MoldID,
-                        MoldDesc = x.Error.Mold.MoldDescription,
-                        LocationName = x.Error.Mold?.Location?.LocationName,
-                        PriorityDescription = x.Error.Priority?.Description,
-                        ErrorStatus = x.LatestStatus,
-                        // ... other fields you want to return
+                    .Select((x, index) => {
+                        var leadingTechnician = db.Employees.FirstOrDefault(e => e.EmployeeNumber == x.Error.LeadingTechnicianID);
+                        var leadingTechnicianName = leadingTechnician == null ? null : leadingTechnician.FirstName + " " + leadingTechnician.LastName;
+                        return new
+                        {
+                            RowNumber = index + 1,
+                            ErrorNumber = x.Error.ErrorNumber,
+                            Description = x.Error.Description,
+                            ErrorType = x.Error.ErrorType,
+                            OpeningDate = x.Error.OpeningDate,
+                            ClosingDate = x.Error?.ClosingDate,
+                            TreatmentHours = x.Error.TreatmentHours,
+                            TechnicianID = x.Error.TechnicianID,
+                            OpenTechnicianName = x.Error.Technician.Employee.FirstName + " " + x.Error.Technician.Employee.LastName,
+                            LeadingTechnician = leadingTechnicianName,
+                            MoldID = x.Error.MoldID,
+                            MoldDesc = x.Error.Mold.MoldDescription,
+                            LocationName = x.Error.Mold?.Location?.LocationName,
+                            PriorityDescription = x.Error.Priority?.Description,
+                            ErrorStatus = x.LatestStatus,
+                            // ... other fields you want to return
+                        };
                     })
                     .ToList();
 
@@ -70,10 +77,12 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                var errors = db.Errors
+                var errors = db.Errors.Include(e => e.Technician.Employee)
                     .Where(e => e.StatusErrors.OrderByDescending(s => s.Date).FirstOrDefault().StatusType == "Waiting for treatment")
                     .ToList();
 
+
+                var leadingTechnicians = db.Employees.ToList();
                 var errorsWithDetails = errors
                 .Select((error, index) => new
                 {
@@ -84,6 +93,7 @@ namespace WebApplication1.Controllers
                     TreatmentHours = error.TreatmentHours,
                     TechnicianID = error.TechnicianID,
                     TechnicianName = error.Technician.Employee.FirstName + " " + error.Technician.Employee.LastName,
+                    LeadingTechnician = leadingTechnicians.FirstOrDefault(e => e.EmployeeNumber == error.LeadingTechnicianID)?.FirstName + " " + leadingTechnicians.FirstOrDefault(e => e.EmployeeNumber == error.LeadingTechnicianID)?.LastName,
                     MoldID = error.MoldID,
                     LocationName = error.Mold?.Location?.LocationName,
                     PriorityDescription = error.Priority?.Description,
@@ -104,10 +114,11 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                var errors = db.Errors
+                var errors = db.Errors.Include(e => e.Technician.Employee)
                     .Where(e => e.StatusErrors.OrderByDescending(s => s.Date).FirstOrDefault().StatusType == "In treatment")
                     .ToList();
 
+                var leadingTechnicians = db.Employees.ToList();
                 var errorsWithDetails = errors
                     .Select((error, index) => new
                     {
@@ -118,6 +129,7 @@ namespace WebApplication1.Controllers
                         TreatmentHours = error.TreatmentHours,
                         TechnicianID = error.TechnicianID,
                         TechnicianName = error.Technician.Employee.FirstName + " " + error.Technician.Employee.LastName,
+                        LeadingTechnician = leadingTechnicians.FirstOrDefault(e => e.EmployeeNumber == error.LeadingTechnicianID)?.FirstName + " " + leadingTechnicians.FirstOrDefault(e => e.EmployeeNumber == error.LeadingTechnicianID)?.LastName,
                         MoldID = error.MoldID,
                         LocationName = error.Mold?.Location?.LocationName,
                         PriorityDescription = error.Priority?.Description,
@@ -138,10 +150,11 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                var errors = db.Errors
+                var errors = db.Errors.Include(e => e.Technician.Employee)
                     .Where(e => e.StatusErrors.OrderByDescending(s => s.Date).FirstOrDefault().StatusType == "finished")
                     .ToList();
 
+                var leadingTechnicians = db.Employees.ToList();
                 var errorsWithDetails = errors
                     .Select((error, index) => new
                     {
@@ -154,6 +167,7 @@ namespace WebApplication1.Controllers
                         TreatmentHours = error.TreatmentHours,
                         TechnicianID = error.TechnicianID,
                         TechnicianName = error.Technician.Employee.FirstName + " " + error.Technician.Employee.LastName,
+                        LeadingTechnician = leadingTechnicians.FirstOrDefault(e => e.EmployeeNumber == error.LeadingTechnicianID)?.FirstName + " " + leadingTechnicians.FirstOrDefault(e => e.EmployeeNumber == error.LeadingTechnicianID)?.LastName,
                         MoldID = error.MoldID,
                         LocationName = error.Mold?.Location?.LocationName,
                         PriorityDescription = error.Priority?.Description,
@@ -174,11 +188,15 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                var error = db.Errors.Find(id);
+                var error = db.Errors.Include(e => e.Technician.Employee).FirstOrDefault(e => e.ErrorNumber == id);
                 if (error == null)
                 {
                     return NotFound();
                 }
+
+                //Get the leadingTechnicianName
+                var leadingTechnician = db.Employees.FirstOrDefault(e => e.EmployeeNumber == error.LeadingTechnicianID);
+                var leadingTechnicianName = leadingTechnician == null ? null : leadingTechnician.FirstName + " " + leadingTechnician.LastName;
 
                 //Add StatusError information
                 var statusErrors = db.StatusErrors
@@ -190,6 +208,7 @@ namespace WebApplication1.Controllers
                         Date = se.Date,
                         StatusDescription = se.Description,
                         MoldRoomTechnicianNumber = se.MoldRoomTechnicianNumber,
+                        TechnicianName = db.Employees.Where(e => e.EmployeeNumber == se.MoldRoomTechnicianNumber).Select(e => e.FirstName + " " + e.LastName).FirstOrDefault(),
                         ErrorNumber = se.ErrorNumber,
                         StatusType = se.StatusErrorStageEnum.StatusType
                     }).ToArray();
@@ -205,7 +224,8 @@ namespace WebApplication1.Controllers
                         ErrorDescription = error.Description,
                         ErrorType = error.ErrorType,
                         TechnicianID = error.TechnicianID,
-                        TechnicianName = error.Technician.Employee.FirstName + " " + error.Technician.Employee.LastName,
+                        OpenTechnicianName = error.Technician.Employee.FirstName + " " + error.Technician.Employee.LastName,
+                        LeadingTechnician = leadingTechnicianName,
                         PriorityID = error.PriorityID,
                         PriorityName = error.Priority.Description,
                         MoldID = error.MoldID,
@@ -350,7 +370,7 @@ namespace WebApplication1.Controllers
                 //Create a new StatusError obj and set the properties
                 StatusError statusError = new StatusError
                 {
-                    Name = model.Name,
+                    Name = model.StatusName,
                     Time = DateTime.Now,
                     Date = DateTime.Now,
                     Description = model.Description,
@@ -359,13 +379,33 @@ namespace WebApplication1.Controllers
                     StatusType = "In treatment"
                 };
 
+                var updateStatusTechnician = db.Employees.FirstOrDefault(emp => emp.EmployeeNumber == model.MoldRoomTechnicianNumber);
+                var TechName = updateStatusTechnician.FirstName + " " + updateStatusTechnician.LastName;
+
                 //Add the new StatusError object to the database 
                 db.StatusErrors.Add(statusError);
                 db.SaveChanges();
 
+                var response = new
+                {
+                    StatusError = new
+                    {
+                        ErrorStatusID = statusError.ErrorStatusID,
+                        Name = statusError.Name,
+                        Time = statusError.Time,
+                        Date = statusError.Date,
+                        Description = statusError.Description,
+                        MoldRoomTechnicianNumber = statusError.MoldRoomTechnicianNumber,
+                        ErrorNumber = statusError.ErrorNumber,
+                        StatusType = statusError.StatusType
+                    },
+                    TechnicianName = TechName
+                };
 
-                string location = Url.Route("DefaultApi", new { controller = "StatusError", id = statusError.ErrorStatusID });
-                return Created(new Uri(Request.RequestUri, location), statusError);
+
+                //string location = Url.Route("DefaultApi", new { controller = "StatusError", id = statusError.ErrorStatusID });
+                //return Created(new Uri(Request.RequestUri, location), response);
+                return Ok(response);
             }
             catch (Exception ex) { return InternalServerError(ex); }
 
@@ -402,7 +442,7 @@ namespace WebApplication1.Controllers
                 // Create a new StatusError object and set the properties
                 StatusError statusError = new StatusError
                 {
-                    Name = model.Name,
+                    Name = model.StatusName,
                     Time = DateTime.Now,
                     Date = DateTime.Now,
                     Description = model.Description,
@@ -423,10 +463,56 @@ namespace WebApplication1.Controllers
 
         }
 
+        // Filter the Errors based on Priority
+        [HttpGet]
+        [Route("api/error/priority/{priority}")]
+        public IHttpActionResult GetErrorsByPriority(int priority)
+        {
+            try
+            {
+                var errorsWithPriority = db.Errors.Include(e => e.Mold.Location)
+                                                  .Include(e => e.Priority)
+                                                  .Include(e => e.Technician.Employee)
+                                                  .Where(e => e.Priority.PriorityID == priority)
+                                                  .ToList();
+
+                var errorsWithDetails = errorsWithPriority
+                    .Select((x, index) => {
+                        var leadingTechnician = db.Employees.FirstOrDefault(e => e.EmployeeNumber == x.LeadingTechnicianID);
+                        var leadingTechnicianName = leadingTechnician == null ? null : leadingTechnician.FirstName + " " + leadingTechnician.LastName;
+
+                        return new
+                        {
+                            RowNumber = index + 1,
+                            ErrorNumber = x.ErrorNumber,
+                            Description = x.Description,
+                            ErrorType = x.ErrorType,
+                            OpeningDate = x.OpeningDate,
+                            ClosingDate = x.ClosingDate,
+                            TreatmentHours = x.TreatmentHours,
+                            TechnicianID = x.TechnicianID,
+                            OpenTechnicianName = x.Technician.Employee.FirstName + " " + x.Technician.Employee.LastName,
+                            LeadingTechnician = leadingTechnicianName,
+                            MoldID = x.MoldID,
+                            MoldDesc = x.Mold.MoldDescription,
+                            LocationName = x.Mold?.Location?.LocationName,
+                            PriorityDescription = x.Priority?.Description,
+                            PriorityID = x.PriorityID
+                            // ... other fields you want to return
+                        };
+                    })
+                    .ToList();
+
+                return Ok(errorsWithDetails);
+            }
+            catch (Exception ex) { return InternalServerError(ex); }
+        }
+
+
 
         public class AddStatusErrorModel
         {
-            public string Name { get; set; }
+            public string StatusName { get; set; }
             public string Description { get; set; }
             public int MoldRoomTechnicianNumber { get; set; }
         }
