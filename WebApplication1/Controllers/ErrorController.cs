@@ -188,7 +188,9 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                var error = db.Errors.Include(e => e.Technician.Employee).FirstOrDefault(e => e.ErrorNumber == id);
+                var error = db.Errors
+                    .Include(e => e.Technician.Employee)
+                    .FirstOrDefault(e => e.ErrorNumber == id);
                 if (error == null)
                 {
                     return NotFound();
@@ -229,7 +231,8 @@ namespace WebApplication1.Controllers
                         PriorityID = error.PriorityID,
                         PriorityName = error.Priority.Description,
                         MoldID = error.MoldID,
-                        MoldDescription = error.Mold.MoldDescription
+                        MoldDescription = error.Mold.MoldDescription,
+                        MoldLocation = error.Mold.Location.LocationName
                     },
                     StatusErrors = statusErrors
                 };
