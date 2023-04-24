@@ -11,7 +11,7 @@ namespace WebApplication1
         public string Type { get; set; }
         public int TechnicianID { get; set; }
         public int MoldID { get; set; }
-        public HttpPostedFileBase ErrorPicture { get; set; }
+        public string ErrorPicture { get; set; }
 
     }
 

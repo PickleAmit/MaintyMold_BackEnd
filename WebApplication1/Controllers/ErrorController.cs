@@ -69,6 +69,26 @@ namespace WebApplication1.Controllers
             catch (Exception ex) { return InternalServerError(ex); }
         }
 
+        // Gets all of the Molds
+        [HttpGet]
+        [Route("api/molds")]
+        public IHttpActionResult getMolds()
+        {
+            try
+            {
+                var molds = db.Molds.Include((e => e.Location)).Select(mold => new
+                {
+                    moldId = mold.MoldID,
+                    moldDesc = mold.MoldDescription,
+                    moldLocation = mold.Location.LocationName,
+                    moldLastTreatment = mold.LastTreatmentDate,
+                    moldHoursLastTreatment = mold.HourOfLastTreatment,
+                }).ToList();
+
+                return Ok(molds);
+            }
+            catch (Exception ex) { return InternalServerError(ex); }
+    }
 
         // Gets all the errors with StatusType 'Waiting for treatment'
         [HttpGet]
@@ -226,13 +246,14 @@ namespace WebApplication1.Controllers
                         ErrorDescription = error.Description,
                         ErrorType = error.ErrorType,
                         TechnicianID = error.TechnicianID,
-                        OpenTechnicianName = error.Technician.Employee.FirstName + " " + error.Technician.Employee.LastName,
+                        OpenTechnicianName = error.Technician?.Employee?.FirstName + " " + error.Technician.Employee.LastName,
                         LeadingTechnician = leadingTechnicianName,
                         PriorityID = error.PriorityID,
-                        PriorityName = error.Priority.Description,
+                        PriorityName = error.Priority?.Description,
                         MoldID = error.MoldID,
-                        MoldDescription = error.Mold.MoldDescription,
-                        MoldLocation = error.Mold.Location.LocationName
+                        MoldDescription = error.Mold?.MoldDescription,
+                        MoldLocation = error.Mold?.Location.LocationName,
+                        ErrorPicture = error.ErrorPicture != null ? Convert.ToBase64String(error.ErrorPicture) : null,
                     },
                     StatusErrors = statusErrors
                 };
@@ -273,13 +294,12 @@ namespace WebApplication1.Controllers
                     LeadingTechnicianID = null,
                 };
 
-                if (model.ErrorPicture != null && model.ErrorPicture.ContentLength > 0)
+                Console.WriteLine(model.ErrorPicture);
+                if (!string.IsNullOrEmpty(model.ErrorPicture))
                 {
-                    using (var binaryReader = new BinaryReader(model.ErrorPicture.InputStream))
-                    {
-                        error.ErrorPicture = binaryReader.ReadBytes(model.ErrorPicture.ContentLength);
-                    }
+                    error.ErrorPicture = Convert.FromBase64String(model.ErrorPicture);
                 }
+
 
                 // Add the new Error object to the database and save the changes
                 db.Errors.Add(error);
