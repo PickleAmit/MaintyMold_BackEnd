@@ -531,6 +531,50 @@ namespace WebApplication1.Controllers
             catch (Exception ex) { return InternalServerError(ex); }
         }
 
+        // Gets all errors of specific technician 
+        [HttpGet]
+        [Route("api/error/technician/{technicianId}")]
+        public IHttpActionResult GetErrorsByTechnician(int technicianId)
+        {
+            try
+            {
+                // Query the database to filter errors based on the technicianId
+                var errors = db.Errors
+                    .Include(e => e.Technician.Employee)
+                    .Include(e => e.StatusErrors)
+                    .Where(e => e.TechnicianID == technicianId || e.LeadingTechnicianID == technicianId)
+                    .Select(e => new
+                    {
+                        ErrorStatus = e.StatusErrors
+                        .OrderByDescending(se => se.Date)
+                        .Select(se => se.StatusType)
+                        .FirstOrDefault(),
+                        ErrorNumber = e.ErrorNumber,
+                        ErrorDescription = e.Description,
+                        ErrorType = e.ErrorType,
+                        OpeningTechnicianID = e.TechnicianID,
+                        LeadingTechnician = e.LeadingTechnicianID,
+                        leadingTechnicianName = db.Technicians
+                        .Where(t => t.EmployeeNumber == e.LeadingTechnicianID)
+                        .Select(t => t.Employee.FirstName + " " + t.Employee.LastName)
+                        .FirstOrDefault(),
+                        OpeningTechnicianName = e.Technician.Employee.FirstName + " " + e.Technician.Employee.LastName,
+                        OpeningDate = e.OpeningDate,
+                        PriorityID = e.PriorityID,
+                        PriorityName = e.Priority.Description,
+                        MoldID = e.MoldID,
+                        MoldDescription = e.Mold.MoldDescription,
+                        MoldLocation = e.Mold.Location.LocationName,
+                    })
+                    .ToList();
+
+                return Ok(errors);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
 
 
         public class AddStatusErrorModel
