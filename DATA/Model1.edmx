@@ -64,6 +64,7 @@
           <Property Name="LastTreatmentDate" Type="datetime" />
           <Property Name="HourOfLastTreatment" Type="int" />
           <Property Name="LocationCode" Type="int" />
+          <Property Name="moldStatusAfterTreatment" Type="nvarchar" MaxLength="25" />
         </EntityType>
         <EntityType Name="MoldRoomTechnician">
           <Key>
@@ -490,6 +491,7 @@
           <Property Name="LocationCode" Type="Int32" />
           <NavigationProperty Name="Errors" Relationship="Self.FK__Error__MoldID__1EA48E88" FromRole="Mold" ToRole="Error" />
           <NavigationProperty Name="Location" Relationship="Self.FK__Mold__LocationCo__19DFD96B" FromRole="Mold" ToRole="Location" />
+          <Property Name="moldStatusAfterTreatment" Type="String" MaxLength="25" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="MoldRoomTechnician">
           <Key>
@@ -882,6 +884,7 @@
           <EntitySetMapping Name="Molds">
             <EntityTypeMapping TypeName="igroup191_test1Model.Mold">
               <MappingFragment StoreEntitySet="Mold">
+                <ScalarProperty Name="moldStatusAfterTreatment" ColumnName="moldStatusAfterTreatment" />
                 <ScalarProperty Name="MoldID" ColumnName="MoldID" />
                 <ScalarProperty Name="MoldDescription" ColumnName="MoldDescription" />
                 <ScalarProperty Name="LastTreatmentDate" ColumnName="LastTreatmentDate" />

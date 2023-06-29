@@ -39,7 +39,8 @@ namespace WebApplication1.Controllers
                                                       .ToList();
 
                 var errorsWithDetails = errorsWithLatestStatus
-                    .Select((x, index) => {
+                    .Select((x, index) =>
+                    {
                         var leadingTechnician = db.Employees.FirstOrDefault(e => e.EmployeeNumber == x.Error.LeadingTechnicianID);
                         var leadingTechnicianName = leadingTechnician == null ? null : leadingTechnician.FirstName + " " + leadingTechnician.LastName;
                         return new
@@ -62,6 +63,7 @@ namespace WebApplication1.Controllers
                             // ... other fields you want to return
                         };
                     })
+                    .OrderBy(x => x.PriorityDescription == "Red" ? 0 : x.PriorityDescription == "Yellow" ? 1 : 2)
                     .ToList();
 
                 return Ok(errorsWithDetails);
@@ -72,23 +74,60 @@ namespace WebApplication1.Controllers
         // Gets all of the Molds
         [HttpGet]
         [Route("api/molds")]
-        public IHttpActionResult getMolds()
+        public IHttpActionResult GetMolds()
         {
             try
             {
-                var molds = db.Molds.Include((e => e.Location)).Select(mold => new
-                {
-                    moldId = mold.MoldID,
-                    moldDesc = mold.MoldDescription,
-                    moldLocation = mold.Location.LocationName,
-                    moldLastTreatment = mold.LastTreatmentDate,
-                    moldHoursLastTreatment = mold.HourOfLastTreatment,
-                }).ToList();
+                var molds = db.Molds.Include(e => e.Location)
+                                    .Join(db.Errors, mold => mold.MoldID, error => error.MoldID, (mold, error) => new { Mold = mold, Error = error })
+                                    .Join(db.Priorities, me => me.Error.PriorityID, priority => priority.PriorityID, (me, priority) => new { me.Mold, me.Error, Priority = priority })
+                                    .Join(db.Employees, mep => mep.Error.LeadingTechnicianID, employee => employee.EmployeeNumber, (mep, employee) => new { mep.Mold, mep.Error, mep.Priority, Employee = employee })
+                                    .GroupBy(x => x.Mold.MoldID)
+                                    .Select(group => new
+                                    {
+                                        MoldId = group.Key,
+                                        MoldDesc = group.FirstOrDefault().Mold.MoldDescription,
+                                        MoldLocation = group.FirstOrDefault().Mold.Location.LocationName,
+                                        MoldLastTreatment = group.FirstOrDefault().Mold.LastTreatmentDate,
+                                        MoldHoursLastTreatment = group.FirstOrDefault().Mold.HourOfLastTreatment,
+                                        MoldPriority = group.FirstOrDefault().Priority.Description,
+                                        MoldStatusAfterTreatment = group.FirstOrDefault().Mold.moldStatusAfterTreatment,
+                                        LeadingTechnician = group.FirstOrDefault().Employee.FirstName + " " + group.FirstOrDefault().Employee.LastName,
+                                        ErrorOpeningDate = group.FirstOrDefault().Error.OpeningDate,
+                                    })
+                                    .ToList();
 
                 return Ok(molds);
             }
             catch (Exception ex) { return InternalServerError(ex); }
-    }
+        }
+
+
+        // Updates only the status of the mold after treatment (נדרשת לייצור/ממתין לטיפול/פעילה/נדרשת לאחסון)
+        [HttpPut]
+        [Route("api/molds/{moldId}/status")]
+        public IHttpActionResult UpdateMoldStatus(int moldId, [FromBody] MoldStatusUpdate moldStatusUpdate)
+        {
+            try
+            {
+                var mold = db.Molds.FirstOrDefault(m => m.MoldID == moldId);
+                if (mold == null)
+                {
+                    return NotFound();
+                }
+
+                mold.moldStatusAfterTreatment = moldStatusUpdate.MoldStatusAfterTreatment;
+                db.SaveChanges();
+
+                return Ok(mold.moldStatusAfterTreatment);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+        
+
 
         // Gets all the errors with StatusType 'Waiting for treatment'
         [HttpGet]
@@ -485,6 +524,7 @@ namespace WebApplication1.Controllers
             catch (Exception ex) { return InternalServerError(ex); }
 
         }
+        
 
         // Filter the Errors based on Priority
         [HttpGet]
@@ -500,7 +540,8 @@ namespace WebApplication1.Controllers
                                                   .ToList();
 
                 var errorsWithDetails = errorsWithPriority
-                    .Select((x, index) => {
+                    .Select((x, index) =>
+                    {
                         var leadingTechnician = db.Employees.FirstOrDefault(e => e.EmployeeNumber == x.LeadingTechnicianID);
                         var leadingTechnicianName = leadingTechnician == null ? null : leadingTechnician.FirstName + " " + leadingTechnician.LastName;
 
@@ -583,6 +624,12 @@ namespace WebApplication1.Controllers
             public string Description { get; set; }
             public int MoldRoomTechnicianNumber { get; set; }
         }
+
+        public class MoldStatusUpdate
+        {
+            public string MoldStatusAfterTreatment { get; set; }
+        }
+
 
     }
 }

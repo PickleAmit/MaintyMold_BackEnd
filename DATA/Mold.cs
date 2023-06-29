@@ -25,6 +25,7 @@ namespace DATA
         public Nullable<System.DateTime> LastTreatmentDate { get; set; }
         public Nullable<int> HourOfLastTreatment { get; set; }
         public Nullable<int> LocationCode { get; set; }
+        public string moldStatusAfterTreatment { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Error> Errors { get; set; }
