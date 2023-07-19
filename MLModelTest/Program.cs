@@ -17,6 +17,9 @@ namespace MLModelTest
             // Prepare the data
             var data = modelClass.PrepareData();
 
+            // Experiment with different algorithms
+            modelClass.ExperimentWithAlgorithms(data);
+
             // Train the model
             var model = modelClass.TrainTechnicianModel(data);
 
